@@ -76,17 +76,12 @@ def clean_data(tickers, start_date, end_date):
                 'Open': 'open', 'Adj Close': 'close', 'High': 'high', 'Low': 'low', 'Volume': 'volume'
             })
 
-            # 5. Filter & Retention
-            required_cols = ['open', 'high', 'low', 'close', 'volume']
-            existing_cols = [c for c in required_cols if c in df.columns]
-            df = df[existing_cols]
-
-            # 6. Handle Missing Values
+            # 5. Handle Missing Values
             # Use Forward Fill (LOCF) to maintain time-series continuity
             df = df.ffill()
             df = df.dropna()
 
-            # 7. Fat Tail Analysis (Extreme Volatility Check)
+            # 6. Fat Tail Analysis (Extreme Volatility Check)
             # Flag daily returns > 20% for manual review (potential M&A, earnings, or data error)
             daily_ret = df['close'].pct_change().abs()
             extreme_moves = daily_ret[daily_ret > 0.20]
