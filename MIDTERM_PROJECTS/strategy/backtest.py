@@ -4,62 +4,50 @@ from MIDTERM_PROJECTS.strategy.signals import (check_entry_signal,check_exit_sig
 from MIDTERM_PROJECTS.strategy.indicators import add_indicators
 
 
-def run_single_backtest(df, initial_capital=1000):
+def run_single_backtest(df, fund=1000, rsi_buy=40, trailing_stop=0.10): # instead stop_loss = 0.07
     """
-    Simulates the trading strategy on a single asset.
+    Simulates trading on a single asset.
+    Updated to support Hyperparameter Tuning via arguments.
 
     Args:
-        df (pd.DataFrame): Historical data.
-        initial_capital (float): Starting cash.
-
-    Returns:
-        pd.Series: The Equity Curve (Total Asset Value over time).
+        df (pd.DataFrame): Data with indicators.
+        fund (float): Initial capital.
+        rsi_buy (int): RSI threshold for entry (Default: 40).
+        trailing_stop (float) : (Default: 10).
     """
-    # 1. Pre-calculate indicators
     df = add_indicators(df)
+    cash = fund
+    stock = 0
+    highest_price = 0  # Track peak price
+    equity = []
 
-    # 2. Initialize State
-    cash = initial_capital
-    position = 0  # Number of shares held
-    entry_price = 0  # Average cost basis
-    equity_curve = []  # Track value over time
-
-    # 3. Time-Stepping Simulation Loop
     for index, row in df.iterrows():
         price = row['close']
-
-        # Use .get() to safely handle NaN values at the start of data
         ema = row.get('EMA_200')
         rsi = row.get('RSI')
 
-        # Skip simulation if indicators are not ready (NaN)
-        if pd.isna(ema) or pd.isna(rsi):
-            equity_curve.append(cash)
-            continue
-
-        # --- EXECUTION LOGIC ---
-
-        # Scenario: Holding Cash -> Look to BUY
-        if position == 0:
-            if check_entry_signal(price, ema, rsi):
-                position = cash / price  # All-in execution
-                entry_price = price
+        # BUY Logic
+        if stock == 0 and not pd.isna(ema) and not pd.isna(rsi):
+            if price > ema and rsi < rsi_buy:
+                stock = cash / price
                 cash = 0
+                highest_price = price  # Initialize peak
 
-        # Scenario: Holding Stock -> Look to SELL
-        elif position > 0:
-            if check_exit_signal(price, rsi, entry_price):
-                cash = position * price  # Liquidate position
-                position = 0
-                entry_price = 0
+        # SELL Logic (Trailing Stop)
+        elif stock > 0:
+            if price > highest_price:
+                highest_price = price  # Update peak
 
-        # --- MARK TO MARKET CALCULATION ---
-        # Current Value = Cash + (Shares * Current Price)
-        current_equity = cash + (position * price)
-        equity_curve.append(current_equity)
+            stop_price = highest_price * (1 - trailing_stop)
 
-    # Return Series with matching index dates
-    return pd.Series(equity_curve, index=df.index[-len(equity_curve):])
+            if (rsi > 75) or (price < stop_price):
+                cash = stock * price
+                stock = 0
+                highest_price = 0
+
+        equity.append(cash + (stock * price))
+
+    return pd.Series(equity, index=df.index[-len(equity):])
 
 
 def run_portfolio_backtest(data_dict, capital_per_stock=1000):
