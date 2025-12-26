@@ -100,7 +100,7 @@ To prevent **Overfitting**, we utilized a Time-Series Split (80/20) approach:
 
 The strategy demonstrates robust performance, effectively navigating the 2022 Tech Bear Market thanks to the Trailing Stop mechanism.
 
-![Strategy Result](MIDTERM_PROJECTS/main/images/strategy_result.pngn
+![Strategy Result](MIDTERM_PROJECTS/main/images/strategy_result.png)
 *Figure 3: Strategy Equity Curve (Green) vs. Benchmark.*
 
 ### Key Metrics (2021-2025)
@@ -148,7 +148,7 @@ MIDTERM_PROJECTS/
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/tamnguyen-2905/CF_Tam22110193/MIDTERM_PROJECTS.git](https://github.com/tamnguyen-2905/CF_Tam22110193/MIDTERM_PROJECTS.git)
+    git clone [https://github.com/tamnguyen-2905/CF_Tam22110193.git](https://github.com/tamnguyen-2905/CF_Tam22110193.git)
     cd MIDTERM_PROJECTS
     ```
 
