@@ -11,7 +11,7 @@ This project implements and backtests a quantitative trading strategy focused on
 
 The core logic combines **Trend Following** ( as a filter to capture long-term upside) with **Mean Reversion** (to optimize entry points), enhanced by a **Trailing Stop** mechanism to minimize downside risk.
 
-> **Key Objective:** Outperform the S&P 500 benchmark by leveraging the high beta and volatility of the AI sector while strictly managing drawdowns.
+> **Key Objective:** To achieve an asymmetric return profile—capturing the high upside of AI stocks while strictly capping losses through Trailing Stop strategy..
 
 ---
 
