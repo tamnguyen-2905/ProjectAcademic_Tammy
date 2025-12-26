@@ -1,7 +1,7 @@
 # 📈 AI & High-Growth Quantitative Trading Strategy
 ### Midterm Project - Algorithmic Trading System
 
-![Language](https://img.shields.io/badge/Language-Python-3.10%2B-blue)
+![Language](https://img.shields.io/badge/Language-Python_3.10+-blue)
 ![Libraries](https://img.shields.io/badge/Stack-Pandas%20|%20NumPy%20|%20Matplotlib-green)
 ![Strategy](https://img.shields.io/badge/Strategy-Trend%20Following%20%2B%20Mean%20Reversion-orange)
 
