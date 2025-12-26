@@ -5,7 +5,7 @@ from MIDTERM_PROJECTS.strategy.signals import (check_entry_signal,check_exit_sig
 from MIDTERM_PROJECTS.strategy.indicators import add_indicators
 from MIDTERM_PROJECTS.strategy.performance import (calculate_cagr, calculate_max_drawdown, calculate_sharpe_ratio,
                                                    generate_report)
-
+import yfinance as yf
 import matplotlib.pyplot as plt
 import os
 
@@ -54,21 +54,29 @@ def main():
     print("STEP 3: RUNNING STRATEGY SIMULATION")
     print("=" * 50)
 
-    # Run the backtest logic (EMA + RSI)
+    # --- TRONG FILE main.py (STEP 3) ---
+
     portfolio_results = run_portfolio_backtest(data_dict)
 
-    # Plot the Equity Curve (Total Portfolio Value)
+    spy = yf.download('SPY', start=START_DATE, end=END_DATE, auto_adjust= False)['Adj Close']
+
+    spy = spy.reindex(portfolio_results.index).ffill()
+
+    initial_capital = portfolio_results['TOTAL'].iloc[0]
+    spy_normalized = (spy / spy.iloc[0]) * initial_capital
+
     plt.figure(figsize=(12, 6))
     plt.plot(portfolio_results.index, portfolio_results['TOTAL'],
-             label='AI Portfolio Strategy', color='green', linewidth=2)
+             label='AI Strategy', color='green', linewidth=2)
+    plt.plot(spy_normalized.index, spy_normalized,
+             label='S&P 500 (Benchmark)', color='gray', linestyle='--', alpha=0.7)
 
-    plt.title('Strategy Performance: Equity Curve', fontsize=14, fontweight='bold')
+    plt.title('Strategy Performance vs. Benchmark', fontsize=14, fontweight='bold')
     plt.xlabel('Date')
     plt.ylabel('Total Equity ($)')
     plt.legend(loc='upper left')
     plt.grid(True, alpha=0.3)
 
-    # Save the result chart
     save_path = f'{IMAGE_DIR}/strategy_result.png'
     plt.savefig(save_path, dpi=300)
     print(f"-> Strategy Result Chart saved to: {save_path}")
