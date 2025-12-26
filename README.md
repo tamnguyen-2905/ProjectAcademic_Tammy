@@ -107,7 +107,7 @@ The strategy demonstrates robust performance, effectively navigating the 2022 Te
 
 | Metric | Value | Interpretation |
 | :--- | :--- | :--- |
-| **Total Return** | ** ~526.85% ** | Significantly outperforms the benchmark. |
+| **Total Return** | **526.85%** | Significantly outperforms the benchmark. |
 | **CAGR** | **18.63%** | Consistent high-growth compounding. |
 | **Sharpe Ratio** | **1.25** | Good risk-adjusted returns. |
 | **Max Drawdown** | **-19.97%** | Controlled losses (significantly lower than Nasdaq's -35%). |
