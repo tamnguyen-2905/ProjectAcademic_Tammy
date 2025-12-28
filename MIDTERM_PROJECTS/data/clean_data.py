@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 import numpy as np
-
+import os
 
 def clean_data(tickers, start_date, end_date):
     """
@@ -103,3 +103,18 @@ def clean_data(tickers, start_date, end_date):
             print(f"Error processing {ticker}: {e}")
 
     return processed_data
+
+
+def save_data(data_dict):
+    folder_name = 'cleaned data'
+    os.makedirs(folder_name, exist_ok=True)
+
+    for ticker, df in data_dict.items():
+        file_path = os.path.join(folder_name, f"{ticker}.csv")
+        df.to_csv(file_path)
+
+my_tickers = ['NVDA', 'AMD', 'MSFT', 'GOOGL', 'META', 'TSLA', 'PLTR', 'AVGO', 'AMZN', 'SMCI']
+start = '2015-01-01'
+end = '2025-10-01'
+cleaned_results = clean_data(my_tickers, start, end)
+save_data(cleaned_results)

@@ -1,47 +1,55 @@
-# --- STRATEGY CONFIGURATION ---
-RSI_OVERSOLD = 40  # Entry Threshold (Buy on Pullback)
-RSI_OVERBOUGHT = 75  # Exit Threshold (Take Profit)
-STOP_LOSS_PCT = 0.07  # Hard Stop Loss (7%)
+import pandas as pd
 
 
-def check_entry_signal(price, ema, rsi):
+def check_entry_signal(price, ema, rsi, rsi_threshold=40):
     """
-    Checks conditions for a LONG entry.
+    Evaluates conditions for opening a LONG position.
 
-    Strategy Logic: Trend Following + Mean Reversion Pullback
-    1. Trend: Price must be above EMA 200.
-    2. Setup: RSI must be below 40 (Short-term oversold).
+    Strategy: Trend Following + Mean Reversion
+    1. Trend Filter: Price must be above EMA 200 (Long-term Uptrend).
+    2. Entry Trigger: RSI must be below the threshold (Buying the dip).
+
+    Args:
+        price (float): Current closing price.
+        ema (float): Current EMA 200 value.
+        rsi (float): Current RSI 14 value.
+        rsi_threshold (int): The RSI level to trigger a buy (default: 40).
 
     Returns:
-        bool: True if entry conditions are met.
+        bool: True if entry conditions are met, otherwise False.
     """
-    # Validation: Ensure indicators exist
-    if price is None or ema is None or rsi is None:
+    # Validation: Ensure indicators are not NaN
+    if pd.isna(ema) or pd.isna(rsi):
         return False
 
     is_uptrend = price > ema
-    is_pullback = rsi < RSI_OVERSOLD
+    is_pullback = rsi < rsi_threshold
 
     return is_uptrend and is_pullback
 
 
-def check_exit_signal(price, rsi, entry_price):
+def check_exit_signal(price, rsi, highest_price, trailing_stop_pct=0.10, rsi_sell_threshold=75):
     """
-    Checks conditions for closing a position.
+    Evaluates conditions for closing a position.
 
     Exit Logic:
-    1. Take Profit: RSI becomes overbought (> 75).
-    2. Stop Loss: Price drops 7% below entry price.
+    1. Take Profit: RSI becomes Overbought (> 75).
+    2. Trailing Stop: Price drops by a specific percentage from the highest peak.
+
+    Args:
+        price (float): Current closing price.
+        rsi (float): Current RSI 14 value.
+        highest_price (float): The highest price reached since entry.
+        trailing_stop_pct (float): Percentage drop to trigger exit (e.g., 0.10 for 10%).
 
     Returns:
         bool: True if exit conditions are met.
     """
-    if entry_price == 0: return False
+    # 1. Take Profit (Momentum is overheated)
+    take_profit = rsi > rsi_sell_threshold
 
-    # 1. Take Profit (RSI Overheated)
-    take_profit = rsi > RSI_OVERBOUGHT
+    # 2. Trailing Stop (Protect profits / Limit downside)
+    stop_price = highest_price * (1 - trailing_stop_pct)
+    hit_trailing_stop = price < stop_price
 
-    # 2. Stop Loss (Risk Management)
-    stop_loss = price < entry_price * (1 - STOP_LOSS_PCT)
-
-    return take_profit or stop_loss
+    return take_profit or hit_trailing_stop

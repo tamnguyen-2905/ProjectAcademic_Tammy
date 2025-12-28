@@ -11,6 +11,7 @@ import os
 
 # --- CONFIGURATION ---
 # Thematic Portfolio: "AI & High Growth"
+# TICKERS = ['AAPL', 'NFLX', 'QCOM', 'MU', 'ARM', 'DELL', 'VRT', 'ANET', 'CRWD', 'ORCL']
 TICKERS = ['NVDA', 'AMD', 'MSFT', 'GOOGL', 'META', 'TSLA', 'PLTR', 'AVGO', 'AMZN', 'SMCI']
 START_DATE = '2015-01-01'
 END_DATE = '2025-10-01'
@@ -21,9 +22,6 @@ os.makedirs(IMAGE_DIR, exist_ok=True)
 
 
 def main():
-    """
-    Main execution pipeline for the AI Portfolio Project.
-    """
 
     # --- STEP 1: DATA ACQUISITION ---
     print("\n" + "=" * 50)
@@ -53,8 +51,6 @@ def main():
     print("\n" + "=" * 50)
     print("STEP 3: RUNNING STRATEGY SIMULATION")
     print("=" * 50)
-
-    # --- TRONG FILE main.py (STEP 3) ---
 
     portfolio_results = run_portfolio_backtest(data_dict)
 

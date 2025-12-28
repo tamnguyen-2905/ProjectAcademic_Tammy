@@ -16,63 +16,58 @@ def calculate_sharpe(equity_series):
     return (ret.mean() / ret.std()) * np.sqrt(252)
 
 
+
 def run_grid_search(data_dict):
-    """
-    Grid Search for Trailing Stop Optimization.
-    """
-    print("\n" + "=" * 60)
-    print("GRID SEARCH: TRAILING STOP OPTIMIZATION (80/20 SPLIT)")
-    print("=" * 60)
+    print("\n" + "=" * 80)
+    print("FULL GRID SEARCH: RSI BUY/SELL & TRAILING STOP")
+    print("=" * 80)
 
-    # Grid Parameters
-    rsi_options = [30, 35, 40]
-    trail_options = [0.05, 0.08, 0.10, 0.12, 0.15]  # 5% to 15%
+    rsi_buy_options = [30, 35, 40]
+    rsi_sell_options = [70, 75, 80]
+    trail_options = [0.10, 0.12, 0.15]
 
-    print(f"{'RSI':<5} | {'TRAIL':<6} | {'TRAIN SHARPE':<12} | {'TEST SHARPE':<12} | {'STATUS'}")
-    print("-" * 60)
+    print(f"{'BUY':<4} | {'SELL':<4} | {'TRAIL':<5} | {'TRAIN SHARPE':<12} | {'TEST SHARPE':<12} | {'STATUS'}")
+    print("-" * 70)
 
     best_score = -999
     best_params = None
 
-    for rsi in rsi_options:
-        for trail in trail_options:
-            train_scores, test_scores = [], []
+    for r_buy in rsi_buy_options:
+        for r_sell in rsi_sell_options:
+            for trail in trail_options:
 
-            for ticker, df in data_dict.items():
-                if len(df) < 100: continue
-                train, test = split_data(df)
+                if r_buy >= r_sell: continue
 
-                # Run Backtest
-                res_train = run_single_backtest(train, rsi_buy=rsi, trailing_stop=trail)
-                res_test = run_single_backtest(test, rsi_buy=rsi, trailing_stop=trail)
+                train_scores, test_scores = [], []
 
-                train_scores.append(calculate_sharpe(res_train))
-                test_scores.append(calculate_sharpe(res_test))
+                for ticker, df in data_dict.items():
+                    if len(df) < 100: continue
+                    train, test = split_data(df)
 
-            avg_train = np.mean(train_scores) if train_scores else 0
-            avg_test = np.mean(test_scores) if test_scores else 0
+                    res_train = run_single_backtest(train, rsi_buy=r_buy, rsi_sell=r_sell, trailing_stop=trail)
+                    res_test = run_single_backtest(test, rsi_buy=r_buy, rsi_sell=r_sell, trailing_stop=trail)
 
-            # Robustness Check
-            status = "OK"
-            if avg_train > 1.5 and avg_test < 0.5:
-                status = "OVERFIT"
-            elif avg_test < 0:
-                status = "LOSS"
+                    train_scores.append(calculate_sharpe(res_train))
+                    test_scores.append(calculate_sharpe(res_test))
 
-            print(f"{rsi:<5} | {trail * 100:<4.0f}% | {avg_train:<12.2f} | {avg_test:<12.2f} | {status}")
+                avg_train = np.mean(train_scores) if train_scores else 0
+                avg_test = np.mean(test_scores) if test_scores else 0
 
-            if avg_train > best_score and avg_test > 0.5:
-                best_score = avg_train
-                best_params = (rsi, trail)
+                status = "OVERFIT" if (avg_train > 1.2 and avg_test > 0.5) else "OK"
+                print(
+                    f"{r_buy:<4} | {r_sell:<4} | {trail * 100:<3.0f}%  | {avg_train:<12.2f} | {avg_test:<12.2f} | {status}")
 
-    print("-" * 60)
+                if avg_train > best_score and avg_test > 0.5:
+                    best_score = avg_train
+                    best_params = (r_buy, r_sell, trail)
+
+    print("-" * 70)
     if best_params:
-        print(f"RECOMMENDED: RSI={best_params[0]}, TRAILING_STOP={best_params[1]}")
-    else:
-        print("RECOMMENDED: Default Settings (No robust params found).")
+        print(f"RECOMMENDED: RSI_BUY={best_params[0]}, RSI_SELL={best_params[1]}, TRAILING={best_params[2]}")
 
 from MIDTERM_PROJECTS.data.clean_data import clean_data
 
+# TICKERS = ['AAPL', 'NFLX', 'QCOM', 'MU', 'ARM', 'DELL', 'VRT', 'ANET', 'CRWD', 'ORCL']
 TICKERS = ['NVDA', 'AMD', 'MSFT', 'GOOGL', 'META', 'TSLA', 'PLTR', 'AVGO', 'AMZN', 'SMCI']
 START = '2015-01-01'
 END = '2025-10-01'
