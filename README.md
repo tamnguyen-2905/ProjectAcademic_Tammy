@@ -1,7 +1,7 @@
 # 📈 AI & High-Growth Quantitative Trading Strategy
 ### Midterm Project - Algorithmic Trading System
 
-![Language](https://img.shields.io/badge/Language-Python-3.10%2B-blue)
+![Language](https://img.shields.io/badge/Language-Python_3.10+-blue)
 ![Libraries](https://img.shields.io/badge/Stack-Pandas%20|%20NumPy%20|%20Matplotlib-green)
 ![Strategy](https://img.shields.io/badge/Strategy-Trend%20Following%20%2B%20Mean%20Reversion-orange)
 
@@ -9,9 +9,9 @@
 
 This project implements and backtests a quantitative trading strategy focused on a thematic portfolio of **10 High-Growth AI & Technology Stocks**.
 
-The core logic combines **Trend Following** (to capture long-term upside) with **Mean Reversion** (to optimize entry points), enhanced by a **Trailing Stop** mechanism to minimize downside risk.
+The core logic combines **Trend Following** ( as a filter to capture long-term upside) with **Mean Reversion** (to optimize entry points), enhanced by a **Trailing Stop** mechanism to minimize downside risk.
 
-> **Key Objective:** Outperform the S&P 500 benchmark by leveraging the high beta and volatility of the AI sector while strictly managing drawdowns.
+> **Key Objective:** To achieve an asymmetric return profile—capturing the high upside of AI stocks while strictly capping losses through Trailing Stop strategy..
 
 ---
 
@@ -107,7 +107,7 @@ The strategy demonstrates robust performance, effectively navigating the 2022 Te
 
 | Metric | Value | Interpretation |
 | :--- | :--- | :--- |
-| **Total Return** | ** ~526.85% ** | Significantly outperforms the benchmark. |
+| **Total Return** | **526.85%** | Significantly outperforms the benchmark. |
 | **CAGR** | **18.63%** | Consistent high-growth compounding. |
 | **Sharpe Ratio** | **1.25** | Good risk-adjusted returns. |
 | **Max Drawdown** | **-19.97%** | Controlled losses (significantly lower than Nasdaq's -35%). |
